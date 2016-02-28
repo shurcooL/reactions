@@ -25,6 +25,7 @@ span.emoji-outer {
 }
 
 div.reaction {
+	cursor: pointer;
 	display: inline-block;
 	box-sizing: border-box;
 	padding: 3px 5px;
@@ -33,6 +34,15 @@ div.reaction {
 	color: #8ec0e6;
 	border: 1px solid #92def9;
 	border-radius: 4px;
+}
+
+div.others {
+	background-color: #fff;
+	color: #aaa;
+	border: 1px solid #e0e0e0;
+}
+div.others:hover {
+	border: 1px solid #95d8ef;
 }
 </style>
 	</head>
@@ -46,6 +56,15 @@ div.reaction {
 		<div class="entry">
 
 			<div class="reaction">
+				<span class="emoji-outer emoji-sizer"><span class="emoji-inner" style="background: url(https://slack.global.ssl.fastly.net/d4bf/img/emoji_2015_2/sheet_apple_64_indexed_256colors.png); background-position: 65% 45%;"></span></span>
+				<b>1</b>
+			</div>
+
+		</div>
+
+		<div class="entry">
+
+			<div class="reaction others">
 				<span class="emoji-outer emoji-sizer"><span class="emoji-inner" style="background: url(https://slack.global.ssl.fastly.net/d4bf/img/emoji_2015_2/sheet_apple_64_indexed_256colors.png); background-position: 65% 45%;"></span></span>
 				<b>1</b>
 			</div>

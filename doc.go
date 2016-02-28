@@ -1,4 +1,4 @@
 // Package reactions ...
-package octicons
+package reactions
 
 //go:generate go run generate.go
