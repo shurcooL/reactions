@@ -1,8 +1,21 @@
 <html>
 	<head>
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/octicons/3.5.0/octicons.css" media="all" rel="stylesheet" type="text/css" />
 		<style type="text/css">
+sup {
+	top: -0.5em;
+	position: relative;
+	font-size: 75%;
+	line-height: 0;
+	vertical-align: baseline;
+}
+
 div.entry {
 	margin-top: 50px;
+}
+
+div.comment-reactions-container:hover div.new-reaction {
+	display: inline-block;
 }
 
 span.emoji-inner {
@@ -34,6 +47,7 @@ div.reaction {
 	color: #8ec0e6;
 	border: 1px solid #92def9;
 	border-radius: 4px;
+	margin-right: 2px;
 }
 
 div.others {
@@ -42,7 +56,26 @@ div.others {
 	border: 1px solid #e0e0e0;
 }
 div.others:hover {
-	border: 1px solid #95d8ef;
+	border: 1px solid #92def9;
+}
+
+div.new-reaction {
+	cursor: pointer;
+	display: none;
+	box-sizing: border-box;
+	padding: 5px 2px 5px 4px;
+	height: 30px;
+	color: #aaa;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+	vertical-align: top;
+}
+div.new-reaction i {
+	font-size: 18px;
+}
+div.new-reaction:hover {
+	color: #eda000;
+	border: 1px solid #92def9;
 }
 </style>
 	</head>
@@ -69,6 +102,21 @@ div.others:hover {
 				<b>1</b>
 			</div>
 
+		</div>
+
+		<div class="entry">
+		<div class="comment-reactions-container">
+
+			<div class="reaction others">
+				<span class="emoji-outer emoji-sizer"><span class="emoji-inner" style="background: url(https://slack.global.ssl.fastly.net/d4bf/img/emoji_2015_2/sheet_apple_64_indexed_256colors.png); background-position: 65% 45%;"></span></span>
+				<b>1</b>
+			</div>
+
+			<div class="new-reaction">
+				<i class="octicon octicon-smiley"><sup>+</sup></i>
+			</div>
+
+		</div>
 		</div>
 	</body>
 </html>
