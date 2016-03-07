@@ -10,6 +10,8 @@ import (
 	"github.com/shurcooL/fsissues"
 	"github.com/shurcooL/issuesapp"
 	"github.com/shurcooL/issuesapp/common"
+	"github.com/shurcooL/play/186/issuesutil"
+	"github.com/shurcooL/users"
 	"golang.org/x/net/context"
 	"src.sourcegraph.com/apps/tracker/issues"
 )
@@ -36,7 +38,17 @@ func main() {
 }
 
 func initApp() error {
-	service := fs.NewService("/Users/Dmitri/Dropbox/Needs Processing/foo2")
+	users := users.Static{}
+	service := fs.NewService("/Users/Dmitri/Dropbox/Needs Processing/foo2", users, "src.sourcegraph.com")
+
+	err := issuesutil.DumpUsers(context.TODO(), service, issues.RepoSpec{"apps/tracker"})
+	if err != nil {
+		log.Fatalln(err)
+	}
+	err = issuesutil.DumpUsers(context.TODO(), service, issues.RepoSpec{"apps/notifications"})
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	opt := issuesapp.Options{
 		Context:   func(req *http.Request) context.Context { return context.TODO() },
@@ -79,7 +91,7 @@ func initApp() error {
 			if req.URL.RawQuery != "" {
 				baseURL += "?" + req.URL.RawQuery
 			}
-			http.Redirect(w, req, baseURL, http.StatusMovedPermanently)
+			http.Redirect(w, req, baseURL, http.StatusFound)
 			return
 		}
 		req.URL.Path = req.URL.Path[prefixLen:]
