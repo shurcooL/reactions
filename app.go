@@ -6,11 +6,12 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/shurcooL/fsissues"
 	"github.com/shurcooL/issuesapp"
 	"github.com/shurcooL/issuesapp/common"
-	"github.com/shurcooL/play/186/issuesutil"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/context"
 	"src.sourcegraph.com/apps/tracker/issues"
@@ -39,15 +40,9 @@ func main() {
 
 func initApp() error {
 	users := users.Static{}
-	service := fs.NewService("/Users/Dmitri/Dropbox/Needs Processing/foo2", users, "src.sourcegraph.com")
-
-	err := issuesutil.DumpUsers(context.TODO(), service, issues.RepoSpec{"apps/tracker"})
+	service, err := fs.NewService(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues"), users)
 	if err != nil {
-		log.Fatalln(err)
-	}
-	err = issuesutil.DumpUsers(context.TODO(), service, issues.RepoSpec{"apps/notifications"})
-	if err != nil {
-		log.Fatalln(err)
+		return err
 	}
 
 	opt := issuesapp.Options{
