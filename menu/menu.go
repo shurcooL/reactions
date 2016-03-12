@@ -21,8 +21,21 @@ func setup() {
 	overlay := document.CreateElement("div").(*dom.HTMLDivElement)
 	overlay.SetClass("reactions-menu")
 
-	container := document.CreateElement("div")
+	container := document.CreateElement("div").(*dom.HTMLDivElement)
+	container.SetClass("reactions-menu-container")
 	overlay.AppendChild(container)
+
+	const authenticatedUser = false
+	// Disable for unauthenticated user.
+	if !authenticatedUser {
+		disabled := document.CreateElement("div").(*dom.HTMLDivElement)
+		disabled.SetClass("reactions-menu-disabled")
+		signIn := document.CreateElement("div").(*dom.HTMLDivElement)
+		signIn.SetClass("reactions-menu-signin")
+		signIn.SetInnerHTML(`<form method="post" action="/login/github" style="display: inline-block;"><input type="submit" name="" value="Sign in via GitHub"></form> to react.`)
+		disabled.AppendChild(signIn)
+		container.AppendChild(disabled)
+	}
 
 	filter := document.CreateElement("input").(*dom.HTMLInputElement)
 	filter.SetClass("reactions-filter")
