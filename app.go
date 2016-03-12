@@ -64,7 +64,7 @@ func initApp() error {
 				},
 			}
 		},
-		HeadPre: `<link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" media="all" rel="stylesheet" type="text/css" />
+		HeadPre: `<!--link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" media="all" rel="stylesheet" type="text/css" /-->
 <style type="text/css">
 	body {
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

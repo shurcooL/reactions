@@ -35,9 +35,9 @@ func setup() {
 	container.AppendChild(preview)
 	preview.SetOuterHTML(`<div class="reactions-preview"><span id="reactions-preview-emoji"></span><span id="reactions-preview-label"></span></div>`)
 
-	update(filter, results)
+	updateFilteredResults(filter, results)
 	filter.AddEventListener("input", false, func(dom.Event) {
-		update(filter, results)
+		updateFilteredResults(filter, results)
 	})
 
 	results.AddEventListener("mousemove", false, func(event dom.Event) {
@@ -45,23 +45,17 @@ func setup() {
 		x := (me.ClientX - int(results.GetBoundingClientRect().Left) + results.Underlying().Get("scrollLeft").Int()) / 30
 		y := (me.ClientY - int(results.GetBoundingClientRect().Top) + results.Underlying().Get("scrollTop").Int()) / 30
 		i := y*9 + x
-		if i < 0 || i >= len(filtered) {
-			return
-		}
-		emojiID := filtered[i]
-
-		label := document.GetElementByID("reactions-preview-label").(*dom.HTMLSpanElement)
-		label.SetTextContent(strings.Trim(emojiID, ":"))
-		emoji := document.GetElementByID("reactions-preview-emoji").(*dom.HTMLSpanElement)
-		emoji.SetInnerHTML(`<span class="emoji large" style="background-position: ` + reactions.Position(emojiID) + `;"></span></div>`)
+		updateSelected(i)
 	})
 
 	document.Body().AppendChild(overlay)
+
+	updateSelected(0)
 }
 
 var filtered []string
 
-func update(filter *dom.HTMLInputElement, results dom.Element) {
+func updateFilteredResults(filter *dom.HTMLInputElement, results dom.Element) {
 	lower := strings.ToLower(strings.TrimSpace(filter.Value))
 	results.SetInnerHTML("")
 	filtered = nil
@@ -74,4 +68,17 @@ func update(filter *dom.HTMLInputElement, results dom.Element) {
 		element.SetOuterHTML(`<div class="reaction"><span class="emoji" style="background-position: ` + reactions.Position(emojiID) + `;"></span></div>`)
 		filtered = append(filtered, emojiID)
 	}
+}
+
+// updateSelected reaction to filtered[index].
+func updateSelected(index int) {
+	if index < 0 || index >= len(filtered) {
+		return
+	}
+	emojiID := filtered[index]
+
+	label := document.GetElementByID("reactions-preview-label").(*dom.HTMLSpanElement)
+	label.SetTextContent(strings.Trim(emojiID, ":"))
+	emoji := document.GetElementByID("reactions-preview-emoji").(*dom.HTMLSpanElement)
+	emoji.SetInnerHTML(`<span class="emoji large" style="background-position: ` + reactions.Position(emojiID) + `;"></span></div>`)
 }
