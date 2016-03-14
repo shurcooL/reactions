@@ -46,11 +46,9 @@ func initApp() error {
 	}
 
 	opt := issuesapp.Options{
-		Context:   func(req *http.Request) context.Context { return context.TODO() },
-		RepoSpec:  func(req *http.Request) issues.RepoSpec { return issues.RepoSpec{"apps/tracker"} },
-		BaseURI:   func(req *http.Request) string { return "/blog" },
-		CSRFToken: func(req *http.Request) string { return "" },
-		Verbatim:  func(w http.ResponseWriter) {},
+		Context:  func(req *http.Request) context.Context { return context.TODO() },
+		RepoSpec: func(req *http.Request) issues.RepoSpec { return issues.RepoSpec{"apps/tracker"} },
+		BaseURI:  func(req *http.Request) string { return "/blog" },
 		BaseState: func(req *http.Request) issuesapp.BaseState {
 			reqPath := req.URL.Path
 			if reqPath == "/" {
@@ -58,9 +56,8 @@ func initApp() error {
 			}
 			return issuesapp.BaseState{
 				State: common.State{
-					BaseURI:   "/blog",
-					ReqPath:   reqPath,
-					CSRFToken: "",
+					BaseURI: "/blog",
+					ReqPath: reqPath,
 				},
 			}
 		},

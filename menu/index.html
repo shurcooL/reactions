@@ -5,36 +5,42 @@ body {
 	padding: 20px;
 }
 
-span.emoji {
+span.rm-emoji {
 	display: inline-block;
 	width: 22px;
 	height: 22px;
 	background: url(https://slack.global.ssl.fastly.net/d4bf/img/emoji_2015_2/sheet_apple_64_indexed_256colors.png);
 	background-size: 4100%;
 }
-span.large {
+span.rm-large {
 	width: 44px;
 	height: 44px;
 }
 
-div.reaction {
+div.rm-reaction {
 	display: inline-block;
 	padding: 4px;
 	border-radius: 4px;
 	cursor: pointer;
 }
-div.reaction:hover {
+div.rm-reaction:hover {
 	background-color: #92def9;
 }
 
-div.reactions-menu {
+div#rm-reactions-menu {
+	position: fixed;
+	/*right: 12px;
+	display: none;*/
+	z-index: 1000;
+
+	background-color: white;
 	border: 1px solid lightgray;
 	box-shadow: 0 5px 10px rgba(0, 0, 0, .12);
 	border-radius: 6px;
 	padding: 8px;
 	width: 270px;
 }
-input.reactions-filter {
+input.rm-reactions-filter {
 	width: 100%;
 	height: 30px;
 	font-family: sans-serif;
@@ -45,18 +51,18 @@ input.reactions-filter {
 	border-radius: 15px;
 	margin-bottom: 8px;
 }
-div.reactions-results {
+div.rm-reactions-results {
 	overflow: scroll;
 	height: 300px;
 }
-div.reactions-preview {
+div.rm-reactions-preview {
 	height: 44px;
 	margin-top: 10px;
 	/*background-color: #eeeeee;*/
 }
-span#reactions-preview-emoji {
+span#rm-reactions-preview-emoji {
 }
-span#reactions-preview-label {
+span#rm-reactions-preview-label {
 	margin-left: 10px;
 	vertical-align: top;
 	font-family: sans-serif;
@@ -64,16 +70,16 @@ span#reactions-preview-label {
 	font-weight: bold;
 }
 
-div.reactions-menu-container {
+div.rm-reactions-menu-container {
 	position: relative;
 }
-div.reactions-menu-disabled {
+div.rm-reactions-menu-disabled {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	background-color: rgba(255, 255, 255, 0.75);
 }
-div.reactions-menu-signin {
+div.rm-reactions-menu-signin {
 	font-family: sans-serif;
 	font-size: 15px;
 	margin-top: 185px;
