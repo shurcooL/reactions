@@ -4,30 +4,31 @@ import (
 	"reflect"
 	"testing"
 
-	"src.sourcegraph.com/apps/tracker/issues"
+	"github.com/shurcooL/reactions"
+	"github.com/shurcooL/users"
 )
 
 func TestToggleReaction(t *testing.T) {
-	c := comment{
+	r := reactable{
 		Reactions: []reaction{
-			{EmojiID: issues.EmojiID("bar"), Authors: []userSpec{{ID: 1}, {ID: 2}}},
-			{EmojiID: issues.EmojiID("baz"), Authors: []userSpec{{ID: 3}}},
+			{EmojiID: reactions.EmojiID("bar"), Authors: []userSpec{{ID: 1}, {ID: 2}}},
+			{EmojiID: reactions.EmojiID("baz"), Authors: []userSpec{{ID: 3}}},
 		},
 	}
 
-	toggleReaction(&c, issues.UserSpec{ID: 1}, issues.EmojiID("foo"))
-	toggleReaction(&c, issues.UserSpec{ID: 1}, issues.EmojiID("bar"))
-	toggleReaction(&c, issues.UserSpec{ID: 1}, issues.EmojiID("baz"))
-	toggleReaction(&c, issues.UserSpec{ID: 2}, issues.EmojiID("bar"))
+	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("foo"))
+	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("bar"))
+	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("baz"))
+	toggleReaction(&r, users.UserSpec{ID: 2}, reactions.EmojiID("bar"))
 
-	want := comment{
+	want := reactable{
 		Reactions: []reaction{
-			{EmojiID: issues.EmojiID("baz"), Authors: []userSpec{{ID: 3}, {ID: 1}}},
-			{EmojiID: issues.EmojiID("foo"), Authors: []userSpec{{ID: 1}}},
+			{EmojiID: reactions.EmojiID("baz"), Authors: []userSpec{{ID: 3}, {ID: 1}}},
+			{EmojiID: reactions.EmojiID("foo"), Authors: []userSpec{{ID: 1}}},
 		},
 	}
 
-	if got := c; !reflect.DeepEqual(got, want) {
+	if got := r; !reflect.DeepEqual(got, want) {
 		t.Errorf("\ngot  %+v\nwant %+v", got.Reactions, want.Reactions)
 	}
 }

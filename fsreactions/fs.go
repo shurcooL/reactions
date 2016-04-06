@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 
-	"github.com/shurcooL/go-goon"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/context"
@@ -13,51 +12,22 @@ import (
 )
 
 // NewService creates a virtual filesystem-backed reactions.Service using root for storage.
-/*func NewService(root webdav.FileSystem) reactions.Service {
+func NewService(root webdav.FileSystem, users users.Service) (reactions.Service, error) {
 	return service{
-		fs: root,
-	}
+		fs:    root,
+		users: users,
+	}, nil
 }
 
 type service struct {
 	fs webdav.FileSystem
-}*/
-
-// TODO.
-// NewService creates a filesystem-backed reactions.Service rooted at rootDir.
-func NewService(rootDir string, users users.Service) (reactions.Service, error) {
-	return service{
-		root:  rootDir,
-		users: users,
-	}, nil
-	// TODO: Return error if rootDir not found, etc.
-}
-
-type service struct {
-	// root directory for issue storage for all repos.
-	root string
 
 	users users.Service
 }
 
-// TODO.
-func (s service) namespace() webdav.FileSystem {
-	return webdav.Dir(s.root)
-}
-
-/*func (s service) createNamespace(uri string) error {
-	// Only needed for first issue in the repo.
-	// TODO: Can this be better?
-	return os.MkdirAll(filepath.Join(s.root, filepath.FromSlash(uri), issuesDir), 0755)
-}*/
-
 func (s service) Get(ctx context.Context, uri string) ([]reactions.Reaction, error) {
-	fs := s.namespace()
-
-	goon.DumpExpr(uri)
-
 	var reactable reactable
-	err := jsonDecodeFile(fs, reactablePath(uri), &reactable)
+	err := jsonDecodeFile(s.fs, reactablePath(uri), &reactable)
 	if os.IsNotExist(err) {
 		return nil, nil
 	} else if err != nil {
@@ -103,13 +73,11 @@ func (s service) Toggle(ctx context.Context, uri string, tr reactions.ToggleRequ
 		return nil, err
 	}
 
-	fs := s.namespace()
-
 	// Get from storage.
 	var reactable reactable
-	err = jsonDecodeFile(fs, reactablePath(uri), &reactable)
+	err = jsonDecodeFile(s.fs, reactablePath(uri), &reactable)
 	if os.IsNotExist(err) {
-		// Ok.
+		// No file is okay. It means this is the first reaction, we're starting from zero.
 	} else if err != nil {
 		return nil, err
 	}
@@ -126,7 +94,7 @@ func (s service) Toggle(ctx context.Context, uri string, tr reactions.ToggleRequ
 	}
 
 	// Commit to storage.
-	err = jsonEncodeFile(fs, reactablePath(uri), reactable)
+	err = jsonEncodeFile(s.fs, reactablePath(uri), reactable)
 	if err != nil {
 		return nil, err
 	}
@@ -208,3 +176,9 @@ func contains(set []userSpec, e users.UserSpec) int {
 	}
 	return -1
 }
+
+/*func (s service) createNamespace(uri string) error {
+	// Only needed for first issue in the repo.
+	// TODO: Can this be better?
+	return os.MkdirAll(filepath.Join(s.root, filepath.FromSlash(uri), issuesDir), 0755)
+}*/
