@@ -21,5 +21,5 @@ func (s service) getUser(ctx context.Context, user users.UserSpec) users.User {
 			HTMLURL:   "",
 		}
 	}
-	return *u
+	return u
 }

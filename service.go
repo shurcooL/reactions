@@ -8,12 +8,12 @@ import (
 
 // Service defines methods of a reactions service.
 type Service interface {
-	// Get reactions for uri.
-	// uri is clean '/'-separated URI. E.g., "domain.com/user/repo".
-	Get(ctx context.Context, uri string) ([]Reaction, error)
+	// Get reactions for id at uri.
+	// uri is clean '/'-separated URI. E.g., "example.com/page".
+	Get(ctx context.Context, uri string, id string) ([]Reaction, error)
 
-	// Toggle a reaction for uri.
-	Toggle(ctx context.Context, uri string, tr ToggleRequest) ([]Reaction, error)
+	// Toggle a reaction for id at uri.
+	Toggle(ctx context.Context, uri string, id string, tr ToggleRequest) ([]Reaction, error)
 }
 
 // Reaction represents a single reaction, backed by 1 or more users.

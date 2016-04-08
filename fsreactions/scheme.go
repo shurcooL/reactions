@@ -47,6 +47,7 @@ func reactablePath(uri string) string {
 	return path.Join(elems...)
 }
 
+// TODO.
 func sanitize(text string) string {
 	var anchorName []rune
 	var futureDash = false

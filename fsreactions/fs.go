@@ -1,9 +1,10 @@
-// Package fsreactions implements reactions.Service using a filesystem.
+// Package fsreactions implements reactions.Service using a virtual filesystem.
 package fsreactions
 
 import (
 	"errors"
 	"os"
+	"path"
 
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
@@ -25,9 +26,9 @@ type service struct {
 	users users.Service
 }
 
-func (s service) Get(ctx context.Context, uri string) ([]reactions.Reaction, error) {
+func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
 	var reactable reactable
-	err := jsonDecodeFile(s.fs, reactablePath(uri), &reactable)
+	err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
 	if os.IsNotExist(err) {
 		return nil, nil
 	} else if err != nil {
@@ -59,7 +60,7 @@ func canReact(authenticatedUser *users.UserSpec) error {
 	return nil
 }
 
-func (s service) Toggle(ctx context.Context, uri string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
+func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
 	currentUser, err := s.getAuthenticated(ctx)
 	if err != nil {
 		return nil, err
@@ -75,7 +76,7 @@ func (s service) Toggle(ctx context.Context, uri string, tr reactions.ToggleRequ
 
 	// Get from storage.
 	var reactable reactable
-	err = jsonDecodeFile(s.fs, reactablePath(uri), &reactable)
+	err = jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
 	if os.IsNotExist(err) {
 		// No file is okay. It means this is the first reaction, we're starting from zero.
 	} else if err != nil {
@@ -94,7 +95,7 @@ func (s service) Toggle(ctx context.Context, uri string, tr reactions.ToggleRequ
 	}
 
 	// Commit to storage.
-	err = jsonEncodeFile(s.fs, reactablePath(uri), reactable)
+	err = jsonEncodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), reactable)
 	if err != nil {
 		return nil, err
 	}
