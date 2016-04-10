@@ -13,12 +13,12 @@ import (
 	"path/filepath"
 
 	"github.com/google/go-github/github"
-	"github.com/shurcooL/fsissues"
+	"github.com/shurcooL/issues"
+	"github.com/shurcooL/issues/fs"
 	"github.com/shurcooL/issuesapp"
 	"github.com/shurcooL/issuesapp/common"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/context"
-	"src.sourcegraph.com/apps/tracker/issues"
 )
 
 var (
@@ -72,11 +72,35 @@ func initApp() error {
 		font-size: 14px;
 		line-height: initial;
 		margin: 20px;
+		color: #373a3c;
+	}
+	a {
+		color: #0275d8;
+		text-decoration: none;
+	}
+	a:focus, a:hover {
+		color: #014c8c;
+		text-decoration: underline;
 	}
 	.btn {
-		font-size: 14px;
+		font-size: 11px;
+		line-height: 11px;
+		border-radius: 4px;
+		border: solid #d2d2d2 1px;
+		background-color: #fff;
+		box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
 	}
 </style>`,
+		BodyPre: `<div style="text-align: right; margin-bottom: 20px; height: 18px; font-size: 12px;">
+	{{if .CurrentUser}}
+		<a class="topbar-avatar" href="{{.CurrentUser.HTMLURL}}" target="_blank" tabindex=-1
+			><img class="topbar-avatar" src="{{.CurrentUser.AvatarURL}}" title="Signed in as {{.CurrentUser.Login}}."
+		></a>
+		<form method="post" action="/logout" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign out"><input type="hidden" name="return" value="{{.BaseURI}}{{.ReqPath}}"></form>
+	{{else}}
+		<form method="post" action="/login/github" style="display: inline-block; margin-bottom: 0;"><input class="btn" type="submit" value="Sign in via GitHub"><input type="hidden" name="return" value="{{.BaseURI}}{{.ReqPath}}"></form>
+	{{end}}
+</div>`,
 	}
 	issuesApp := issuesapp.New(service, opt)
 
