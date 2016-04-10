@@ -3,12 +3,16 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/google/go-github/github"
 	"github.com/shurcooL/fsissues"
 	"github.com/shurcooL/issuesapp"
 	"github.com/shurcooL/issuesapp/common"
@@ -39,7 +43,7 @@ func main() {
 }
 
 func initApp() error {
-	users := users.Static{}
+	users := Users{gh: github.NewClient(nil)}
 	service, err := fs.NewService(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues"), users)
 	if err != nil {
 		return err
@@ -96,4 +100,60 @@ func initApp() error {
 	http.Handle("/blog/", appHandler)
 
 	return nil
+}
+
+// Users implementats users.Service.
+type Users struct {
+	gh *github.Client
+}
+
+func (s Users) Get(ctx context.Context, user users.UserSpec) (users.User, error) {
+	const (
+		gh = "github.com"
+		tw = "twitter.com"
+	)
+
+	switch {
+	case user == users.UserSpec{ID: 1924134, Domain: gh}:
+		// TODO: Consider using UserSpec{ID: 1, Domain: ds} as well.
+		return users.User{
+			UserSpec:  user,
+			Elsewhere: []users.UserSpec{{ID: 21361484, Domain: tw}},
+			Login:     "shurcooL",
+			Name:      "Dmitri Shuralyov",
+			AvatarURL: "https://dmitri.shuralyov.com/avatar.jpg",
+			HTMLURL:   "https://dmitri.shuralyov.com",
+			SiteAdmin: true,
+		}, nil
+
+	case user.Domain == "github.com":
+		ghUser, _, err := s.gh.Users.GetByID(int(user.ID))
+		if err != nil {
+			return users.User{}, err
+		}
+		if ghUser.Login == nil || ghUser.AvatarURL == nil || ghUser.HTMLURL == nil {
+			return users.User{}, fmt.Errorf("github user missing fields: %#v", ghUser)
+		}
+		return users.User{
+			UserSpec:  user,
+			Login:     *ghUser.Login,
+			AvatarURL: template.URL(*ghUser.AvatarURL),
+			HTMLURL:   template.URL(*ghUser.HTMLURL),
+		}, nil
+
+	default:
+		return users.User{}, fmt.Errorf("user %v not found", user)
+	}
+}
+
+func (s Users) GetAuthenticated(ctx context.Context) (*users.UserSpec, error) {
+	// TEMP, HACK: Pretend I'm logged in (for testing).
+	return &users.UserSpec{ID: 1924134, Domain: "github.com"}, nil
+
+	// TEMP, HACK: Pretend I'm logged in as non-admin user.
+	//return &users.UserSpec{ID: 4332971, Domain: "github.com"}, nil
+}
+
+func (Users) Edit(ctx context.Context, er users.EditRequest) (users.User, error) {
+	return users.User{}, errors.New("Edit is not implemented")
 }
