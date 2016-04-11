@@ -1,4 +1,4 @@
-package fsreactions
+package fs
 
 import (
 	"encoding/json"

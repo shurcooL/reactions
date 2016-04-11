@@ -1,5 +1,5 @@
-// Package fsreactions implements reactions.Service using a virtual filesystem.
-package fsreactions
+// Package fs implements reactions.Service using a virtual filesystem.
+package fs
 
 import (
 	"errors"
