@@ -16,7 +16,7 @@ import (
 	}
 }*/
 
-func ExampleBar() {
+func Example_bar() {
 	in := "32.5% 55%"
 	want := []string{"32.5%", "55%"}
 	got := bar(in)
