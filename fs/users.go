@@ -7,10 +7,6 @@ import (
 	"golang.org/x/net/context"
 )
 
-func (s service) getAuthenticated(ctx context.Context) (*users.UserSpec, error) {
-	return s.users.GetAuthenticated(ctx)
-}
-
 func (s service) getUser(ctx context.Context, user users.UserSpec) users.User {
 	u, err := s.users.Get(ctx, user)
 	if err != nil {

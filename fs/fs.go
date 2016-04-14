@@ -61,7 +61,7 @@ func canReact(authenticatedUser *users.UserSpec) error {
 }
 
 func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
-	currentUser, err := s.getAuthenticated(ctx)
+	currentUser, err := s.users.GetAuthenticated(ctx)
 	if err != nil {
 		return nil, err
 	}
