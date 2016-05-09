@@ -52,8 +52,8 @@ func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Re
 
 // canReact returns nil error if authenticatedUser is authorized to react to an entry.
 // It returns os.ErrPermission or an error that happened in other cases.
-func canReact(authenticatedUser *users.UserSpec) error {
-	if authenticatedUser == nil {
+func canReact(authenticatedUser users.UserSpec) error {
+	if authenticatedUser.ID == 0 {
 		// Not logged in, cannot react to anything.
 		return os.ErrPermission
 	}
@@ -61,11 +61,11 @@ func canReact(authenticatedUser *users.UserSpec) error {
 }
 
 func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
-	currentUser, err := s.users.GetAuthenticated(ctx)
+	currentUser, err := s.users.GetAuthenticatedSpec(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if currentUser == nil {
+	if currentUser.ID == 0 {
 		return nil, os.ErrPermission
 	}
 
@@ -89,7 +89,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 	}
 
 	// Apply edits.
-	err = toggleReaction(&reactable, *currentUser, tr.Reaction)
+	err = toggleReaction(&reactable, currentUser, tr.Reaction)
 	if err != nil {
 		return nil, err
 	}
