@@ -116,6 +116,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 }
 
 // toggleReaction toggles reaction emojiID for specified user u.
+// If user is creating a new reaction, they get added to the end of reaction authors.
 func toggleReaction(c *reactable, u users.UserSpec, emojiID reactions.EmojiID) error {
 	reactionsFromUser := 0
 reactionsLoop:

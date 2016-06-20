@@ -18,7 +18,7 @@ type Service interface {
 // Reaction represents a single reaction, backed by 1 or more users.
 type Reaction struct {
 	Reaction EmojiID
-	Users    []users.User // Length is 1 or more.
+	Users    []users.User // Length is 1 or more. First entry is first person who reacted.
 }
 
 // TODO, THINK: Maybe keep the colons, i.e., ":+1:".
