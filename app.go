@@ -68,10 +68,10 @@ func initApp() error {
 		HeadPre: `<!--link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" media="all" rel="stylesheet" type="text/css" /-->
 <style type="text/css">
 	body {
+		margin: 20px;
 		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		line-height: initial;
-		margin: 20px;
 		color: #373a3c;
 	}
 	a {
