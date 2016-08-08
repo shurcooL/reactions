@@ -19,7 +19,7 @@ func main() {
 	document.AddEventListener("DOMContentLoaded", false, func(dom.Event) {
 		Reactions.authenticatedUser = true
 		setupReactionsMenu()
-		Reactions.Show(nil, 0)
+		Reactions.Show(document.Body(), 0)
 	})
 }
 
