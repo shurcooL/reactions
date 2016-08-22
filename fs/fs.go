@@ -2,13 +2,13 @@
 package fs
 
 import (
+	"context"
 	"errors"
 	"os"
 	"path"
 
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
-	"golang.org/x/net/context"
 	"golang.org/x/net/webdav"
 )
 

@@ -1,5 +1,5 @@
-// When mousemove handler calls setInnerHTML, it causes click handler not
-// to trigger on iOS.
+// mousemoveclick is a script to demonstrate a peculiar browser behavior on iOS.
+// When mousemove handler calls setInnerHTML, it causes click handler not to trigger.
 package main
 
 import (

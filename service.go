@@ -1,8 +1,9 @@
 package reactions
 
 import (
+	"context"
+
 	"github.com/shurcooL/users"
-	"golang.org/x/net/context"
 )
 
 // Service defines methods of a reactions service.

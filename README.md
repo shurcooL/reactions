@@ -9,6 +9,14 @@ Installation
 go get -u github.com/shurcooL/reactions
 ```
 
+Directories
+-----------
+
+| Path                                                                             | Synopsis                                                                      |
+|----------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| [fs](https://godoc.org/github.com/shurcooL/reactions/fs)                         | Package fs implements reactions.Service using a virtual filesystem.           |
+| [mousemoveclick](https://godoc.org/github.com/shurcooL/reactions/mousemoveclick) | mousemoveclick is a script to demonstrate a peculiar browser behavior on iOS. |
+
 License
 -------
 
