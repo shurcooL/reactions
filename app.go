@@ -19,6 +19,7 @@ import (
 	"github.com/shurcooL/issuesapp"
 	"github.com/shurcooL/issuesapp/common"
 	"github.com/shurcooL/users"
+	"golang.org/x/net/webdav"
 )
 
 var (
@@ -44,7 +45,7 @@ func main() {
 
 func initApp() error {
 	users := Users{gh: github.NewClient(nil)}
-	service, err := fs.NewService(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues"), users)
+	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), users)
 	if err != nil {
 		return err
 	}
