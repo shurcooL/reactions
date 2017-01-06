@@ -43,7 +43,7 @@ func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Re
 		for _, u := range r.Authors {
 			reactionAuthor := u.UserSpec()
 			// TODO: Since we're potentially getting many of the same users multiple times here, consider caching them locally.
-			reaction.Users = append(reaction.Users, s.getUser(ctx, reactionAuthor))
+			reaction.Users = append(reaction.Users, s.user(ctx, reactionAuthor))
 		}
 		rs = append(rs, reaction)
 	}
@@ -108,7 +108,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 		for _, u := range r.Authors {
 			reactionAuthor := u.UserSpec()
 			// TODO: Since we're potentially getting many of the same users multiple times here, consider caching them locally.
-			reaction.Users = append(reaction.Users, s.getUser(ctx, reactionAuthor))
+			reaction.Users = append(reaction.Users, s.user(ctx, reactionAuthor))
 		}
 		rs = append(rs, reaction)
 	}
