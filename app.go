@@ -17,7 +17,6 @@ import (
 	"github.com/shurcooL/issues"
 	"github.com/shurcooL/issues/fs"
 	"github.com/shurcooL/issuesapp"
-	"github.com/shurcooL/issuesapp/common"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/webdav"
 )
@@ -45,27 +44,12 @@ func main() {
 
 func initApp() error {
 	users := Users{gh: github.NewClient(nil)}
-	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), users)
+	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), nil, users)
 	if err != nil {
 		return err
 	}
 
 	opt := issuesapp.Options{
-		Context:  func(req *http.Request) context.Context { return context.TODO() },
-		RepoSpec: func(req *http.Request) issues.RepoSpec { return issues.RepoSpec{"apps/tracker"} },
-		BaseURI:  func(req *http.Request) string { return "/blog" },
-		BaseState: func(req *http.Request) issuesapp.BaseState {
-			reqPath := req.URL.Path
-			if reqPath == "/" {
-				reqPath = ""
-			}
-			return issuesapp.BaseState{
-				State: common.State{
-					BaseURI: "/blog",
-					ReqPath: reqPath,
-				},
-			}
-		},
 		HeadPre: `<!--link href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.css" media="all" rel="stylesheet" type="text/css" /-->
 <style type="text/css">
 	body {
@@ -103,7 +87,7 @@ func initApp() error {
 	{{end}}
 </div>`,
 	}
-	issuesApp := issuesapp.New(service, opt)
+	issuesApp := issuesapp.New(service, users, opt)
 
 	appHandler := http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
 		prefixLen := len("/blog")
@@ -119,6 +103,8 @@ func initApp() error {
 		if req.URL.Path == "" {
 			req.URL.Path = "/"
 		}
+		req = req.WithContext(context.WithValue(req.Context(), issuesapp.RepoSpecContextKey, issues.RepoSpec{"github.com/shurcooL/issuesapp"}))
+		req = req.WithContext(context.WithValue(req.Context(), issuesapp.BaseURIContextKey, "/blog"))
 		issuesApp.ServeHTTP(w, req)
 	})
 	http.Handle("/blog", appHandler)
@@ -171,12 +157,23 @@ func (s Users) Get(ctx context.Context, user users.UserSpec) (users.User, error)
 	}
 }
 
-func (s Users) GetAuthenticated(ctx context.Context) (*users.UserSpec, error) {
+func (s Users) GetAuthenticatedSpec(ctx context.Context) (users.UserSpec, error) {
 	// TEMP, HACK: Pretend I'm logged in (for testing).
-	return &users.UserSpec{ID: 1924134, Domain: "github.com"}, nil
+	return users.UserSpec{ID: 1924134, Domain: "github.com"}, nil
 
 	// TEMP, HACK: Pretend I'm logged in as non-admin user.
 	//return &users.UserSpec{ID: 4332971, Domain: "github.com"}, nil
+}
+
+func (s Users) GetAuthenticated(ctx context.Context) (users.User, error) {
+	userSpec, err := s.GetAuthenticatedSpec(ctx)
+	if err != nil {
+		return users.User{}, err
+	}
+	if userSpec.ID == 0 {
+		return users.User{}, nil
+	}
+	return s.Get(ctx, userSpec)
 }
 
 func (Users) Edit(ctx context.Context, er users.EditRequest) (users.User, error) {
