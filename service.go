@@ -10,9 +10,13 @@ import (
 type Service interface {
 	// Get reactions for id at uri.
 	// uri is clean '/'-separated URI. E.g., "example.com/page".
+	// If uri/id doesn't point at a valid reactable target,
+	// a not found error is returned.
 	Get(ctx context.Context, uri string, id string) ([]Reaction, error)
 
 	// Toggle a reaction for id at uri.
+	// If uri/id doesn't point at a valid reactable target,
+	// a not found error is returned.
 	Toggle(ctx context.Context, uri string, id string, tr ToggleRequest) ([]Reaction, error)
 }
 

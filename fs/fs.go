@@ -29,9 +29,7 @@ type service struct {
 func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
 	var reactable reactable
 	err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
-	if os.IsNotExist(err) {
-		return nil, nil
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 
@@ -77,9 +75,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 	// Get from storage.
 	var reactable reactable
 	err = jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
-	if os.IsNotExist(err) {
-		// No file is okay. It means this is the first reaction, we're starting from zero.
-	} else if err != nil {
+	if err != nil {
 		return nil, err
 	}
 
