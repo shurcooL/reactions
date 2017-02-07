@@ -8,6 +8,11 @@ import (
 
 // Service defines methods of a reactions service.
 type Service interface {
+	// List all reactions at uri. Map key is reactable id.
+	// uri is clean '/'-separated URI. E.g., "example.com/page".
+	// If uri isn't a valid reactable URI, a not found error is returned.
+	List(ctx context.Context, uri string) (map[string][]Reaction, error)
+
 	// Get reactions for id at uri.
 	// uri is clean '/'-separated URI. E.g., "example.com/page".
 	// If uri/id doesn't point at a valid reactable target,
@@ -26,8 +31,8 @@ type Reaction struct {
 	Users    []users.User // Length is 1 or more. First entry is first person who reacted.
 }
 
-// TODO, THINK: Maybe keep the colons, i.e., ":+1:".
 // EmojiID is the id of a reaction. For example, "+1".
+// TODO, THINK: Maybe keep the colons, i.e., ":+1:".
 type EmojiID string
 
 // ToggleRequest is a request to toggle a reaction.

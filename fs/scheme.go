@@ -29,6 +29,7 @@ func (us userSpec) Equal(other users.UserSpec) bool {
 
 // reactable is an on-disk representation of []reactions.Reaction.
 type reactable struct {
+	ID        string
 	Reactions []reaction `json:",omitempty"`
 }
 

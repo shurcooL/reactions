@@ -9,6 +9,7 @@ import (
 
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
+	"github.com/shurcooL/webdavfs/vfsutil"
 	"golang.org/x/net/webdav"
 )
 
@@ -24,6 +25,37 @@ type service struct {
 	fs webdav.FileSystem
 
 	users users.Service
+}
+
+func (s service) List(ctx context.Context, uri string) (map[string][]reactions.Reaction, error) {
+	rm := make(map[string][]reactions.Reaction)
+	fis, err := vfsutil.ReadDir(s.fs, reactablePath(uri))
+	if err != nil {
+		return nil, err
+	}
+	for _, fi := range fis {
+		var reactable reactable
+		err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), fi.Name()), &reactable)
+		if err != nil {
+			return nil, err
+		}
+
+		var rs []reactions.Reaction
+		for _, r := range reactable.Reactions {
+			reaction := reactions.Reaction{
+				Reaction: r.EmojiID,
+			}
+			for _, u := range r.Authors {
+				reactionAuthor := u.UserSpec()
+				// TODO: Since we're potentially getting many of the same users multiple times here, consider caching them locally.
+				reaction.Users = append(reaction.Users, s.user(ctx, reactionAuthor))
+			}
+			rs = append(rs, reaction)
+		}
+		rm[reactable.ID] = rs
+	}
+
+	return rm, nil
 }
 
 func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
