@@ -7,7 +7,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"os"
@@ -148,8 +147,8 @@ func (s Users) Get(ctx context.Context, user users.UserSpec) (users.User, error)
 		return users.User{
 			UserSpec:  user,
 			Login:     *ghUser.Login,
-			AvatarURL: template.URL(*ghUser.AvatarURL),
-			HTMLURL:   template.URL(*ghUser.HTMLURL),
+			AvatarURL: *ghUser.AvatarURL,
+			HTMLURL:   *ghUser.HTMLURL,
 		}, nil
 
 	default:
