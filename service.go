@@ -8,20 +8,20 @@ import (
 
 // Service defines methods of a reactions service.
 type Service interface {
-	// List all reactions at uri. Map key is reactable id.
+	// List all reactions at uri. Map key is reactable ID.
 	// uri is clean '/'-separated URI. E.g., "example.com/page".
-	// If uri isn't a valid reactable URI, a not found error is returned.
+	// If uri isn't a valid reactable URI, a not exist error is returned.
 	List(ctx context.Context, uri string) (map[string][]Reaction, error)
 
 	// Get reactions for id at uri.
 	// uri is clean '/'-separated URI. E.g., "example.com/page".
 	// If uri/id doesn't point at a valid reactable target,
-	// a not found error is returned.
+	// a not exist error is returned.
 	Get(ctx context.Context, uri string, id string) ([]Reaction, error)
 
 	// Toggle a reaction for id at uri.
 	// If uri/id doesn't point at a valid reactable target,
-	// a not found error is returned.
+	// a not exist error is returned.
 	Toggle(ctx context.Context, uri string, id string, tr ToggleRequest) ([]Reaction, error)
 }
 

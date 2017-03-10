@@ -34,6 +34,11 @@ func (s service) List(ctx context.Context, uri string) (map[string][]reactions.R
 		return nil, err
 	}
 	for _, fi := range fis {
+		if fi.IsDir() {
+			continue
+		}
+
+		// Get from storage.
 		var reactable reactable
 		err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), fi.Name()), &reactable)
 		if err != nil {
@@ -59,10 +64,16 @@ func (s service) List(ctx context.Context, uri string) (map[string][]reactions.R
 }
 
 func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
+	// Get from storage.
 	var reactable reactable
-	err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
-	if err != nil {
+	err := jsonDecodeFileNotDir(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
+	if err == errIsDir {
+		return nil, os.ErrNotExist
+	} else if err != nil {
 		return nil, err
+	}
+	if reactable.ID != id {
+		return nil, os.ErrNotExist
 	}
 
 	var rs []reactions.Reaction
@@ -106,9 +117,14 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 
 	// Get from storage.
 	var reactable reactable
-	err = jsonDecodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
-	if err != nil {
+	err = jsonDecodeFileNotDir(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
+	if err == errIsDir {
+		return nil, os.ErrNotExist
+	} else if err != nil {
 		return nil, err
+	}
+	if reactable.ID != id {
+		return nil, os.ErrNotExist
 	}
 
 	// Authorization check.

@@ -1,34 +1,79 @@
-package fs
+package fs_test
 
 import (
-	"reflect"
+	"context"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/shurcooL/reactions"
+	"github.com/shurcooL/reactions/fs"
 	"github.com/shurcooL/users"
+	"github.com/shurcooL/webdavfs/vfsutil"
+	"golang.org/x/net/webdav"
 )
 
-func TestToggleReaction(t *testing.T) {
-	r := reactable{
-		Reactions: []reaction{
-			{EmojiID: reactions.EmojiID("bar"), Authors: []userSpec{{ID: 1}, {ID: 2}}},
-			{EmojiID: reactions.EmojiID("baz"), Authors: []userSpec{{ID: 3}}},
-		},
+func TestService_notExist(t *testing.T) {
+	memFS := webdav.NewMemFS()
+	service, err := fs.NewService(memFS, mockUsers{})
+	if err != nil {
+		t.Fatal(err)
 	}
 
-	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("foo"))
-	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("bar"))
-	toggleReaction(&r, users.UserSpec{ID: 1}, reactions.EmojiID("baz"))
-	toggleReaction(&r, users.UserSpec{ID: 2}, reactions.EmojiID("bar"))
-
-	want := reactable{
-		Reactions: []reaction{
-			{EmojiID: reactions.EmojiID("baz"), Authors: []userSpec{{ID: 3}, {ID: 1}}},
-			{EmojiID: reactions.EmojiID("foo"), Authors: []userSpec{{ID: 1}}},
-		},
+	_, err = service.List(context.Background(), "not/exist")
+	if !os.IsNotExist(err) {
+		t.Errorf("expected not exist error, but got: %v", err)
 	}
 
-	if got := r; !reflect.DeepEqual(got, want) {
-		t.Errorf("\ngot  %+v\nwant %+v", got.Reactions, want.Reactions)
+	_, err = service.Get(context.Background(), "not/exist", "not-exist")
+	if !os.IsNotExist(err) {
+		t.Errorf("expected not exist error, but got: %v", err)
 	}
+
+	_, err = service.Toggle(context.Background(), "not/exist", "not-exist", reactions.ToggleRequest{})
+	if !os.IsNotExist(err) {
+		t.Errorf("expected not exist error, but got: %v", err)
+	}
+
+	err = vfsutil.MkdirAll(memFS, "dir/dir", 0755)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = service.Get(context.Background(), "dir", "dir")
+	if !os.IsNotExist(err) {
+		t.Errorf("expected not exist error, but got: %v", err)
+	}
+}
+
+type mockUsers struct {
+	users.Service
+}
+
+func (mockUsers) Get(_ context.Context, user users.UserSpec) (users.User, error) {
+	switch {
+	case user == users.UserSpec{ID: 1, Domain: "example.org"}:
+		return users.User{
+			UserSpec: user,
+			Login:    "gopher",
+			Name:     "Sample Gopher",
+			Email:    "gopher@example.org",
+		}, nil
+	default:
+		return users.User{}, fmt.Errorf("user %v not found", user)
+	}
+}
+
+func (mockUsers) GetAuthenticatedSpec(_ context.Context) (users.UserSpec, error) {
+	return users.UserSpec{ID: 1, Domain: "example.org"}, nil
+}
+
+func (m mockUsers) GetAuthenticated(ctx context.Context) (users.User, error) {
+	userSpec, err := m.GetAuthenticatedSpec(ctx)
+	if err != nil {
+		return users.User{}, err
+	}
+	if userSpec.ID == 0 {
+		return users.User{}, nil
+	}
+	return m.Get(ctx, userSpec)
 }
