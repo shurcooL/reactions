@@ -1,5 +1,6 @@
 package reactions
 
+// Sorted is a sorted list of reactions.
 var Sorted = []string{
 	":grinning:",
 	":grimacing:",
@@ -1295,6 +1296,7 @@ var Sorted = []string{
 	":flag-zw:",
 }
 
+// Position returns position of emojiID within the emojis tilemap.
 func Position(emojiID string) string {
 	return positions[emojiID]
 }
