@@ -43,7 +43,7 @@ func main() {
 
 func initApp() error {
 	users := Users{gh: github.NewClient(nil)}
-	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), nil, users)
+	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), nil, nil, users)
 	if err != nil {
 		return err
 	}
