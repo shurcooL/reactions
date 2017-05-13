@@ -35,7 +35,7 @@ func TestService_notExist(t *testing.T) {
 		t.Errorf("expected not exist error, but got: %v", err)
 	}
 
-	err = vfsutil.MkdirAll(memFS, "dir/dir", 0755)
+	err = vfsutil.MkdirAll(context.Background(), memFS, "dir/dir", 0755)
 	if err != nil {
 		t.Fatal(err)
 	}

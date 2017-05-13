@@ -29,7 +29,7 @@ type service struct {
 
 func (s service) List(ctx context.Context, uri string) (map[string][]reactions.Reaction, error) {
 	rm := make(map[string][]reactions.Reaction)
-	fis, err := vfsutil.ReadDir(s.fs, reactablePath(uri))
+	fis, err := vfsutil.ReadDir(ctx, s.fs, reactablePath(uri))
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (s service) List(ctx context.Context, uri string) (map[string][]reactions.R
 
 		// Get from storage.
 		var reactable reactable
-		err := jsonDecodeFile(s.fs, path.Join(reactablePath(uri), fi.Name()), &reactable)
+		err := jsonDecodeFile(ctx, s.fs, path.Join(reactablePath(uri), fi.Name()), &reactable)
 		if err != nil {
 			return nil, err
 		}
@@ -66,7 +66,7 @@ func (s service) List(ctx context.Context, uri string) (map[string][]reactions.R
 func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
 	// Get from storage.
 	var reactable reactable
-	err := jsonDecodeFileNotDir(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
+	err := jsonDecodeFileNotDir(ctx, s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
 	if err == errIsDir {
 		return nil, os.ErrNotExist
 	} else if err != nil {
@@ -117,7 +117,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 
 	// Get from storage.
 	var reactable reactable
-	err = jsonDecodeFileNotDir(s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
+	err = jsonDecodeFileNotDir(ctx, s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
 	if err == errIsDir {
 		return nil, os.ErrNotExist
 	} else if err != nil {
@@ -139,7 +139,7 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 	}
 
 	// Commit to storage.
-	err = jsonEncodeFile(s.fs, path.Join(reactablePath(uri), sanitize(id)), reactable)
+	err = jsonEncodeFile(ctx, s.fs, path.Join(reactablePath(uri), sanitize(id)), reactable)
 	if err != nil {
 		return nil, err
 	}
