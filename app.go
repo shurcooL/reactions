@@ -27,21 +27,13 @@ var (
 func main() {
 	flag.Parse()
 
-	var err error
-	err = initApp()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	log.Println("Started.")
-
-	err = http.ListenAndServe(*httpFlag, nil)
+	err := run()
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func initApp() error {
+func run() error {
 	users := Users{gh: github.NewClient(nil)}
 	service, err := fs.NewService(webdav.Dir(filepath.Join(os.Getenv("HOME"), "Dropbox", "Store", "issues")), nil, nil, users)
 	if err != nil {
@@ -109,7 +101,10 @@ func initApp() error {
 	http.Handle("/blog", appHandler)
 	http.Handle("/blog/", appHandler)
 
-	return nil
+	log.Println("Started.")
+
+	err = http.ListenAndServe(*httpFlag, nil)
+	return err
 }
 
 // Users implementats users.Service.
