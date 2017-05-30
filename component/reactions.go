@@ -163,7 +163,7 @@ func (r Reaction) containsCurrentUser(users []users.User) bool {
 		return false
 	}
 	for _, u := range users {
-		if u.ID == r.CurrentUser.ID {
+		if u.UserSpec == r.CurrentUser.UserSpec {
 			return true
 		}
 	}
@@ -180,7 +180,7 @@ func (r Reaction) reactionTooltip(reaction reactions.Reaction) string {
 				users += " and "
 			}
 		}
-		if r.CurrentUser.ID != 0 && u.ID == r.CurrentUser.ID {
+		if r.CurrentUser.ID != 0 && u.UserSpec == r.CurrentUser.UserSpec {
 			if i == 0 {
 				users += "You"
 			} else {
@@ -190,6 +190,8 @@ func (r Reaction) reactionTooltip(reaction reactions.Reaction) string {
 			users += u.Login
 		}
 	}
+	// TODO: Handle when there are too many users and their details are left out by backend.
+	//       Count them and add "and N others" here.
 	return fmt.Sprintf("%v reacted with :%v:.", users, reaction.Reaction)
 }
 
