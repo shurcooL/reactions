@@ -15,10 +15,9 @@ import (
 // ReactionsBar is a component next to anything that can be reacted to, with reactable ID.
 // It displays all reactions for that reactable ID, and a NewReaction component for adding new reactions.
 type ReactionsBar struct {
-	Reactions    []reactions.Reaction
-	ReactableURL string
-	CurrentUser  users.User
-	ID           string // ID is the reactable ID.
+	Reactions   []reactions.Reaction
+	CurrentUser users.User
+	ID          string // ID is the reactable ID.
 }
 
 func (r ReactionsBar) Render() []*html.Node {
