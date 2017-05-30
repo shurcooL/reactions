@@ -24,13 +24,14 @@ type ReactionsBar struct {
 func (r ReactionsBar) Render() []*html.Node {
 	// TODO: Make this much nicer.
 	/*
-		<div class="reactable-container" data-reactableID="{{.ID}}">
+		<div id="reactable-container-{{.ID}}" class="reactable-container" data-reactableID="{{.ID}}">
 			ReactionsBarInner{Reactions: reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}
 		</div>
 	*/
 	div := &html.Node{
 		Type: html.ElementNode, Data: atom.Div.String(),
 		Attr: []html.Attribute{
+			{Key: atom.Id.String(), Val: "reactable-container-" + r.ID},
 			{Key: atom.Class.String(), Val: "reactable-container"},
 			{Key: "data-reactableID", Val: r.ID},
 		},
