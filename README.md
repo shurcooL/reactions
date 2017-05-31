@@ -15,11 +15,12 @@ go get -u github.com/shurcooL/reactions
 Directories
 -----------
 
-| Path                                                                             | Synopsis                                                                      |
-|----------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
-| [emojis](https://godoc.org/github.com/shurcooL/reactions/emojis)                 | Package emojis contains emojis image data.                                    |
-| [fs](https://godoc.org/github.com/shurcooL/reactions/fs)                         | Package fs implements reactions.Service using a virtual filesystem.           |
-| [mousemoveclick](https://godoc.org/github.com/shurcooL/reactions/mousemoveclick) | mousemoveclick is a script to demonstrate a peculiar browser behavior on iOS. |
+| Path                                                                             | Synopsis                                                                             |
+|----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------|
+| [component](https://godoc.org/github.com/shurcooL/reactions/component)           | Package component contains individual components that can render themselves as HTML. |
+| [emojis](https://godoc.org/github.com/shurcooL/reactions/emojis)                 | Package emojis contains emojis image data.                                           |
+| [fs](https://godoc.org/github.com/shurcooL/reactions/fs)                         | Package fs implements reactions.Service using a virtual filesystem.                  |
+| [mousemoveclick](https://godoc.org/github.com/shurcooL/reactions/mousemoveclick) | mousemoveclick is a script to demonstrate a peculiar browser behavior on iOS.        |
 
 License
 -------
