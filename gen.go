@@ -3,9 +3,11 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -13,6 +15,8 @@ import (
 )
 
 func main() {
+	flag.Parse()
+
 	err := run()
 	if err != nil {
 		log.Fatalln(err)
@@ -20,7 +24,7 @@ func main() {
 }
 
 func run() error {
-	f, err := os.Open("src.html")
+	f, err := os.Open(filepath.Join("_gendata", "src.html"))
 	if err != nil {
 		return err
 	}
@@ -36,18 +40,15 @@ func run() error {
 	return nil
 }
 
-// walk ...
 func walk(n *html.Node) {
 	var f func(n *html.Node)
 	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "span" &&
-			hasAttr(n, "class", "emoji-inner") {
-
+		if n.Type == html.ElementNode && n.Data == "span" && hasAttr(n, "class", "emoji-inner") {
 			name := getAttr(n.Parent.Parent, "data-name")
 			backgroundPosition := strings.TrimSuffix(strings.TrimPrefix(getAttr(n, "style"), "background: url(https://slack.global.ssl.fastly.net/d4bf/img/emoji_2015_2/sheet_apple_64_indexed_256colors.png);background-position:"), ";background-size:4100%")
 			fmt.Printf("%q: %q,\n", name, backgroundPosition)
-			//x, y := parse(backgroundPosition)
-			//fmt.Println(name, x, y)
+			x, y := parsePosition(backgroundPosition)
+			fmt.Println(name, x, y)
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
 			f(c)
@@ -75,12 +76,14 @@ func getAttr(n *html.Node, key string) (val string) {
 	panic("not found")
 }
 
-func parse(s string) (int, int) {
+// parsePosition parses "97.5% 0%" to 39 0, etc.
+func parsePosition(s string) (x int, y int) {
 	xy := strings.Fields(s)
-	return baz(xy[0]), baz(xy[1])
+	return parsePercentage(xy[0]), parsePercentage(xy[1])
 }
 
-func baz(in string) int {
+// parsePercentage parses "0%" to 0, "2.5%" to 1, "5%" to 2, "97.5%" to 39, etc.
+func parsePercentage(in string) int {
 	in = in[:len(in)-1] // Trim "%" suffix.
 	f, err := strconv.ParseFloat(in, 64)
 	if err != nil {
@@ -90,6 +93,7 @@ func baz(in string) int {
 	return near(f)
 }
 
+// near returns the nearest int to f.
 func near(f float64) int {
 	if f >= 0 {
 		return int(f + 0.5)
