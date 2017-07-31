@@ -35,9 +35,7 @@ func (r ReactionsBar) Render() []*html.Node {
 			{Key: "data-reactableID", Val: r.ID},
 		},
 	}
-	for _, n := range (ReactionsBarInner{Reactions: r.Reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}).Render() {
-		div.AppendChild(n)
-	}
+	htmlg.AppendChildren(div, ReactionsBarInner{Reactions: r.Reactions, CurrentUser: r.CurrentUser, ReactableID: r.ID}.Render()...)
 	return []*html.Node{div}
 }
 
