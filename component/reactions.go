@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/shurcooL/htmlg"
-	"github.com/shurcooL/octiconssvg"
+	"github.com/shurcooL/octicon"
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
 	"golang.org/x/net/html"
@@ -203,16 +203,16 @@ func (nr NewReaction) Render() []*html.Node {
 	/*
 		<a href="javascript:" title="React" onclick="ShowReactionMenu(this, event, {{.}});">
 			<div class="new-reaction">
-				<octiconssvg.Smiley() class="smiley" />
-				<octiconssvg.PlusSmall() class="plus" />
+				<octicon.Smiley() class="smiley" />
+				<octicon.PlusSmall() class="plus" />
 			</div>
 		</a>
 	*/
-	smiley := octiconssvg.Smiley()
+	smiley := octicon.Smiley()
 	smiley.Attr = append(smiley.Attr, html.Attribute{
 		Key: atom.Class.String(), Val: "smiley",
 	})
-	plus := octiconssvg.PlusSmall()
+	plus := octicon.PlusSmall()
 	plus.Attr = append(plus.Attr, html.Attribute{
 		Key: atom.Class.String(), Val: "plus",
 	})
