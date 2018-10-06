@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"path"
+	"sync"
 
 	"github.com/shurcooL/reactions"
 	"github.com/shurcooL/users"
@@ -15,19 +16,23 @@ import (
 
 // NewService creates a virtual filesystem-backed reactions.Service using root for storage.
 func NewService(root webdav.FileSystem, users users.Service) (reactions.Service, error) {
-	return service{
+	return &service{
 		fs:    root,
 		users: users,
 	}, nil
 }
 
 type service struct {
-	fs webdav.FileSystem
+	fsMu sync.RWMutex
+	fs   webdav.FileSystem
 
 	users users.Service
 }
 
-func (s service) List(ctx context.Context, uri string) (map[string][]reactions.Reaction, error) {
+func (s *service) List(ctx context.Context, uri string) (map[string][]reactions.Reaction, error) {
+	s.fsMu.RLock()
+	defer s.fsMu.RUnlock()
+
 	rm := make(map[string][]reactions.Reaction)
 	fis, err := vfsutil.ReadDir(ctx, s.fs, reactablePath(uri))
 	if err != nil {
@@ -63,7 +68,10 @@ func (s service) List(ctx context.Context, uri string) (map[string][]reactions.R
 	return rm, nil
 }
 
-func (s service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
+func (s *service) Get(ctx context.Context, uri string, id string) ([]reactions.Reaction, error) {
+	s.fsMu.RLock()
+	defer s.fsMu.RUnlock()
+
 	// Get from storage.
 	var reactable reactable
 	err := jsonDecodeFileNotDir(ctx, s.fs, path.Join(reactablePath(uri), sanitize(id)), &reactable)
@@ -101,7 +109,7 @@ func canReact(authenticatedUser users.UserSpec) error {
 	return nil
 }
 
-func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
+func (s *service) Toggle(ctx context.Context, uri string, id string, tr reactions.ToggleRequest) ([]reactions.Reaction, error) {
 	currentUser, err := s.users.GetAuthenticatedSpec(ctx)
 	if err != nil {
 		return nil, err
@@ -114,6 +122,9 @@ func (s service) Toggle(ctx context.Context, uri string, id string, tr reactions
 	if err != nil {
 		return nil, err
 	}
+
+	s.fsMu.Lock()
+	defer s.fsMu.Unlock()
 
 	// Get from storage.
 	var reactable reactable
@@ -222,9 +233,3 @@ func contains(set []userSpec, e users.UserSpec) int {
 	}
 	return -1
 }
-
-/*func (s service) createNamespace(uri string) error {
-	// Only needed for first issue in the repo.
-	// TODO: Can this be better?
-	return os.MkdirAll(filepath.Join(s.root, filepath.FromSlash(uri), issuesDir), 0755)
-}*/
